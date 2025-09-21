@@ -1,0 +1,41 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": " ",
+  "main": "./src/app.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node ./src/app.js",
+    "dev": "nodemon"
+  },
+  "keywords": [],
+  "author": "0xflame-7",
+  "license": "Apache-2.0",
+  "packageManager": "pnpm@10.17.0",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "compression": "^1.8.1",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.1.0",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.18.1",
+    "morgan": "^1.10.1",
+    "nanoid": "^5.1.5",
+    "winston": "^3.17.0"
+  },
+  "volta": {
+    "node": "22.19.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.36.0",
+    "eslint": "^9.36.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "globals": "^16.4.0",
+    "nodemon": "^3.1.10",
+    "prettier": "^3.6.2"
+  }
+}
