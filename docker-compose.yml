@@ -24,7 +24,7 @@ services:
     volumes:
       - /usr/src/app/.pnpm-store
       - /usr/src/app/node_modules
-    command: pnpm start --verbose # nodemon
+    command: pnpm start 
     develop:
       watch:
         - action: sync
