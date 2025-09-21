@@ -6,7 +6,7 @@ RUN npm i -g pnpm
 WORKDIR /usr/src/app
 
 # Copy only package files first (for caching)
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
 # Copy source code
