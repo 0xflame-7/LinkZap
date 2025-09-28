@@ -1,0 +1,49 @@
+services:
+  mongo:
+    image: mongo:8
+    container_name: mongo
+    restart: unless-stopped
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo_data:/data/db
+    command: mongod --quiet --logpath /dev/null
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: dockerfile
+    container_name: backend
+    env_file:
+      - backend/.env
+    ports:
+      - ${PORT:-5000}:5000
+      - 9889:9889
+    command: pnpm start
+    volumes:
+      - /usr/src/app/.pnpm-store
+    develop:
+      watch:
+        - action: sync
+          path: ./backend
+          target: /usr/src/app
+          ignore:
+            - node_modules
+            - dist
+            - .pnpm-store
+
+        - action: rebuild
+          path: ./backend/package.json
+          target: usr/src/app/package.json
+
+        - action: rebuild
+          path: ./backend/dockerfile
+          target: usr/src/app/dockerfile
+
+        - action: sync+restart
+          path: ./backend/src
+          target: /usr/src/app/src
+
+volumes:
+  mongo_data:
+    driver: local
