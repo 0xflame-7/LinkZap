@@ -36,7 +36,7 @@ async function register({ name, email, password, user_agent, ip, res }) {
   return { user, accessToken };
 }
 
-async function login({ email, password }) {
+async function login({ email, password, user_agent, ip, res }) {
   const user = await getUserByEmail(email);
   if (!user) {
     throw new UnauthorizedError('Invalid credentials');
@@ -45,7 +45,14 @@ async function login({ email, password }) {
   const isMatch = await comparePassword(password, user.password);
   if (!isMatch) throw new UnauthorizedError('Invalid credentials');
 
-  return user;
+  const accessToken = await sessionService.createAuthSession({
+    userID: user._id,
+    user_agent,
+    ip,
+    res,
+  });
+
+  return { user, accessToken };
 }
 
 module.exports = { register, login };

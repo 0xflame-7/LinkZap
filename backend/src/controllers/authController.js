@@ -16,7 +16,6 @@ async function register(req, res, next) {
       user_agent: req.headers['user-agent'],
       res,
     });
-    console.log(accessToken);
     res.status(201).json({
       success: true,
       user: { _id: user._id, name: user.name, email: user.email },
@@ -29,10 +28,16 @@ async function register(req, res, next) {
 
 async function login(req, res, next) {
   try {
-    const user = await authService.login(req.body);
+    const { user, accessToken } = await authService.login({
+      ...req.body,
+      ip: req.ip,
+      user_agent: req.headers['user-agent'],
+      res,
+    });
     res.status(200).json({
       success: true,
       user: { _id: user._id, name: user.name, email: user.email },
+      accessToken,
     });
   } catch (err) {
     next(err);

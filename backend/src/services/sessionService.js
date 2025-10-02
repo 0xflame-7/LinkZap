@@ -7,7 +7,10 @@
  * Custom modules
  */
 const { generateAccessToken, generateRefreshToken } = require('../lib/jwt');
-const { createSession } = require('../repositories/sessionRepository');
+const {
+  createSession,
+  setRefreshTokenSave,
+} = require('../repositories/sessionRepository');
 const { setRefreshToken } = require('../lib/cookieParser');
 
 async function createAuthSession({ userID, user_agent, ip, res }) {
@@ -16,6 +19,7 @@ async function createAuthSession({ userID, user_agent, ip, res }) {
   const accessToken = generateAccessToken({ userID, sessionID: session._id });
   const refreshToken = generateRefreshToken({ userID, sessionID: session._id });
 
+  await setRefreshTokenSave(session, refreshToken);
   setRefreshToken(res, refreshToken);
   return accessToken;
 }

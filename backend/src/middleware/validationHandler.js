@@ -8,6 +8,7 @@
  * Node modules
  */
 const { ZodError } = require('zod');
+const { logger } = require('../lib/winston');
 
 const validationHandler =
   (schema, property = 'body') =>
@@ -31,6 +32,8 @@ const validationHandler =
             });
           }
         }
+
+        logger.error(errors);
 
         return res.status(400).json({
           code: 'ValidationError',

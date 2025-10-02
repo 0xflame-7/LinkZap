@@ -18,4 +18,9 @@ const createSession = async (userId, user_agent, ip) => {
   return session;
 };
 
-module.exports = { createSession };
+const setRefreshTokenSave = async (session, Token) => {
+  session.refreshTokenHash = Token;
+  await session.save();
+};
+
+module.exports = { createSession, setRefreshTokenSave };
