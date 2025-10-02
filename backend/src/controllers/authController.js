@@ -6,6 +6,7 @@
 /**
  * Custom modules
  */
+const { getRefreshTokenPayload } = require('../lib/cookieParser');
 const authService = require('../services/authService');
 
 async function register(req, res, next) {
@@ -18,8 +19,10 @@ async function register(req, res, next) {
     });
     res.status(201).json({
       success: true,
-      user: { _id: user._id, name: user.name, email: user.email },
-      accessToken,
+      data: {
+        user: { _id: user._id, name: user.name, email: user.email },
+        accessToken,
+      },
     });
   } catch (err) {
     next(err);
@@ -36,8 +39,10 @@ async function login(req, res, next) {
     });
     res.status(200).json({
       success: true,
-      user: { _id: user._id, name: user.name, email: user.email },
-      accessToken,
+      data: {
+        user: { _id: user._id, name: user.name, email: user.email },
+        accessToken,
+      },
     });
   } catch (err) {
     next(err);
@@ -46,13 +51,20 @@ async function login(req, res, next) {
 
 async function refresh(req, res, next) {
   try {
-    // const result = await authService.refresh()
-  } catch (error) {}
+    const accessToken = await authService.refresh(req, res);
+    res.status(200).json({ success: true, data: { accessToken } });
+  } catch (error) {
+    next(error);
+  }
 }
 
 async function logout(req, res, next) {
   try {
-  } catch (error) {}
+    await authService.logout(req, res);
+    res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
 }
 
-module.exports = { register, login };
+module.exports = { register, login, logout, refresh };

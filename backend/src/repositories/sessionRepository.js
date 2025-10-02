@@ -23,4 +23,17 @@ const setRefreshTokenSave = async (session, Token) => {
   await session.save();
 };
 
-module.exports = { createSession, setRefreshTokenSave };
+const invalidateSession = async (sessionID) => {
+  await Session.updateOne({ _id: sessionID }, { valid: false });
+};
+
+const getSession = async (sessionID) => {
+  return await Session.findOne({ _id: sessionID, valid: true });
+};
+
+module.exports = {
+  createSession,
+  setRefreshTokenSave,
+  invalidateSession,
+  getSession,
+};

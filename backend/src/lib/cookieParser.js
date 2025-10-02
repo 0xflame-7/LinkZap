@@ -7,6 +7,7 @@
  * Custom Modules
  */
 const config = require('../config');
+const { verifyRefreshToken } = require('./jwt');
 
 const setRefreshToken = (res, token) => {
   res.cookie(config.REFRESH_COOKIE_NAME, token, config.COOKIE_OPTIONS);
@@ -18,4 +19,14 @@ const clearRefreshToken = (res) => {
 
 const getRefreshToken = (req) => req.cookies[config.REFRESH_COOKIE_NAME];
 
-module.exports = { setRefreshToken, clearRefreshToken, getRefreshToken };
+const getRefreshTokenPayload = (req) => {
+  const token = getRefreshToken(req);
+  return token ? verifyRefreshToken(token) : null;
+};
+
+module.exports = {
+  setRefreshToken,
+  clearRefreshToken,
+  getRefreshToken,
+  getRefreshTokenPayload,
+};

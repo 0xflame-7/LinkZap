@@ -3,7 +3,7 @@ const baseCookieOption = (isProduction, maxAge) => ({
   secure: isProduction,
   sameSite: isProduction ? 'none' : 'lax',
   maxAge,
-  path: '/auth/refresh',
+  path: '/auth',
 });
 
 module.exports = (nodeEnv, maxAge) => {
