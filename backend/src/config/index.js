@@ -7,7 +7,7 @@
 /**
  * Constants
  */
-const CORS_WHITELIST = ['https://linkzap.render.com'];
+const CORS_WHITELIST = ['https://linkzap.render.com', 'http://localhost:5173'];
 const _1H_IN_MILLISECOND = 1000 * 60 * 60;
 const _7DAYS_IN_MILLISECOND = 1000 * 60 * 60 * 24 * 7;
 
@@ -21,6 +21,7 @@ const config = {
   MONGO_URL: process.env.MONGO_URL,
   WHITELISTED_EMAILS: process.env.WHITELISTED_EMAILS.split(','),
   CORS_MAX_AGE: _7DAYS_IN_MILLISECOND,
+  CLIENT_URL: process.env.CLIENT_URL,
 };
 
 module.exports = config;

@@ -12,23 +12,21 @@ const { Router } = require('express');
 /**
  * Custom modules
  */
-const authController = require('../controllers/authController');
+const urlController = require('../controllers/urlController');
 const validationHandler = require('../middleware/validationHandler');
-const { registerSchema, loginSchema } = require('../schema/authSchema');
 const expressRateLimit = require('../lib/expressRateLimit');
+const urlSchema = require('../schema/urlsSchema');
 
 // Initalize express router
 const router = Router();
 
 // Rate Limit
-router.use(expressRateLimit('auth'));
+router.use(expressRateLimit('basic'));
 
 router.post(
-  '/register',
-  validationHandler(registerSchema),
-  authController.register,
+  '/generate',
+  validationHandler(urlSchema),
+  urlController.shortenUrl,
 );
-
-router.post('/login', validationHandler(loginSchema), authController.login);
 
 module.exports = router;

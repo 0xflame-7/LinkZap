@@ -1,5 +1,16 @@
-// src/middleware/errorHandler.js
-const { logger } = require('../lib/winston');
+const errorHandler = (err, req, res, next) => {
+  if (err instanceof AppError) {
+    return res.status(err.statusCode).json({
+      success: false,
+      message: err.message,
+    });
+  }
+
+  res.status(500).json({
+    success: false,
+    message: err.message || 'Internal Server Error',
+  });
+};
 
 class AppError extends Error {
   statusCode;
@@ -36,32 +47,6 @@ class UnauthorizedError extends AppError {
     super(message, 401);
   }
 }
-
-const errorHandler = (err, req, res, next) => {
-  // Log the error
-  logger.error(
-    `${req.method} ${req.originalUrl} - ${err.message}\n${err.stack}`,
-  );
-
-  // If it's a known AppError
-  if (err instanceof AppError) {
-    return res.status(err.statusCode).json({
-      success: false,
-      message: err.message,
-      ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
-    });
-  }
-
-  // Unknown/unexpected errors
-  return res.status(500).json({
-    success: false,
-    message:
-      process.env.NODE_ENV === 'development'
-        ? err.message || 'Internal Server Error'
-        : 'Internal Server Error',
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
-  });
-};
 
 module.exports = {
   errorHandler,

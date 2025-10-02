@@ -19,12 +19,12 @@ const compression = require('compression');
 const routes = require('./routes');
 const corsOptions = require('./lib/cors');
 const requestHandler = require('./middleware/requestHandler');
+const { errorHandler } = require('./middleware/errorHandler');
 
 // Initialize express
 const app = express();
 
 // Global middleware
-app.use(requestHandler);
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -32,7 +32,13 @@ app.use(cookieParser());
 app.use(compression());
 app.use(helmet());
 
+// Request handler
+app.use(requestHandler);
+
 // Routes
 app.use('/', routes);
+
+// Error handler
+app.use(errorHandler);
 
 module.exports = app;

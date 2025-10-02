@@ -13,4 +13,12 @@ const createUser = async (userData) => {
   return await user.save();
 };
 
-module.exports = { createUser };
+const getUserByEmail = async (email) => {
+  return await User.findOne({ email }).select('+password');
+};
+
+const findUserByEmailPublic = async (email) => {
+  return await User.findOne({ email });
+};
+
+module.exports = { createUser, getUserByEmail, findUserByEmailPublic };

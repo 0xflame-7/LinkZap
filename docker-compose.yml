@@ -44,6 +44,40 @@ services:
           path: ./backend/src
           target: /usr/src/app/src
 
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: dockerfile
+  #   container_name: frontend
+  #   env_file:
+  #     - frontend/.env
+  #   ports:
+  #     - ${PORT:-5173}:5173
+  #   command: pnpm dev --host
+  #   volumes:
+  #     - /usr/src/app/.pnpm-store
+  #   develop:
+  #     watch:
+  #       - action: sync
+  #         path: ./frontend
+  #         target: /usr/src/app
+  #         ignore:
+  #           - node_modules
+  #           - dist
+  #           - .pnpm-store
+
+  #       - action: rebuild
+  #         path: ./frontend/package.json
+  #         target: usr/src/app/package.json
+
+  #       - action: rebuild
+  #         path: ./frontend/dockerfile
+  #         target: usr/src/app/dockerfile
+
+  #       - action: sync+restart
+  #         path: ./frontend/src
+  #         target: /usr/src/app/src
+
 volumes:
   mongo_data:
     driver: local
