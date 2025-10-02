@@ -1,8 +1,13 @@
 /**
  * @author Daksha  Jha
- * @copyright 2025 0xflame-7
+ * @copyright 2025
  * @license Apache-2.0
  */
+
+/**
+ * Custom modules
+ */
+const cookieConfig = require('./cookie');
 
 /**
  * Constants
@@ -20,8 +25,14 @@ const config = {
   WINDOW_MS: _1H_IN_MILLISECOND,
   MONGO_URL: process.env.MONGO_URL,
   WHITELISTED_EMAILS: process.env.WHITELISTED_EMAILS.split(','),
-  CORS_MAX_AGE: _7DAYS_IN_MILLISECOND,
+  REFRESH_TOKEN_EXPIRES_IN: _7DAYS_IN_MILLISECOND,
   CLIENT_URL: process.env.CLIENT_URL,
+  ACCESS_TOKEN_EXPIRES_IN: _1H_IN_MILLISECOND,
+  JWT_SECRET: process.env.JWT_SECRET,
+  JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
 };
 
-module.exports = config;
+module.exports = {
+  ...config,
+  ...cookieConfig(config.NODE_ENV, config.REFRESH_TOKEN_EXPIRES_IN),
+};

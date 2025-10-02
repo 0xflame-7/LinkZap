@@ -32,6 +32,9 @@ app.use(cookieParser());
 app.use(compression());
 app.use(helmet());
 
+// Trust proxy
+app.set('trust proxy', 1);
+
 // Request handler
 app.use(requestHandler);
 

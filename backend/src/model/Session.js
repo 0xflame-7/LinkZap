@@ -1,4 +1,5 @@
 /**
+ * @author Daksha  Jha
  * @copyright 2025 0xflame-7
  * @license Apache-2.0
  */
@@ -26,6 +27,9 @@ const sessionSchema = new Schema(
     ip: {
       type: String,
       required: true,
+    },
+    refreshTokenHash: {
+      type: String,
     },
   },
   { timestamps: true },
