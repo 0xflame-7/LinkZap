@@ -16,6 +16,7 @@ const authController = require('../controllers/authController');
 const validationHandler = require('../middleware/validationHandler');
 const { registerSchema, loginSchema } = require('../schema/authSchema');
 const expressRateLimit = require('../lib/expressRateLimit');
+const authenticationHandler = require('../middleware/authenticationHandler');
 
 // Initalize express router
 const router = Router();
@@ -30,7 +31,7 @@ router.post(
 );
 
 router.post('/login', validationHandler(loginSchema), authController.login);
-router.post('/logout', authController.logout);
+router.post('/logout', authenticationHandler, authController.logout);
 router.post('/refresh', authController.refresh);
 
 module.exports = router;
