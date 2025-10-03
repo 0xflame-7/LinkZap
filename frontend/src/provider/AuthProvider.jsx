@@ -1,53 +1,46 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useState,
-} from 'react';
-
+import { useEffect, useLayoutEffect, useState } from 'react';
 import api from '@/lib/api';
-
-const AuthContext = createContext();
-
-export const useAuth = () => {
-  const authContext = useContext(AuthContext);
-
-  if (!authContext) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-
-  return authContext;
-};
+import { AuthContext } from '@/context/authContext';
 
 const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(null);
+  const [token, setToken] = useState(() => {
+    return sessionStorage.getItem('token') || null;
+  });
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const fetchme = async () => {
+    if (token) {
+      sessionStorage.setItem('token', token);
+    } else {
+      sessionStorage.removeItem('token');
+    }
+  }, [token]);
+
+  // Fetch logged-in user when app starts
+  useEffect(() => {
+    const fetchMe = async () => {
+      if (!token) return;
       try {
-        const respose = await api.get('/users/me');
-        setToken(respose.data.token);
+        const response = await api.get('/user/me');
+        setUser(response.data.user);
       } catch {
         setToken(null);
+        setUser(null);
       }
     };
+    fetchMe();
+  }, [token]);
 
-    fetchme();
-  }, []);
-
+  // Attach token to every request
   useLayoutEffect(() => {
     const authInterceptor = api.interceptors.request.use((config) => {
-      config.headers.Authorization =
-        !config._retry && token
-          ? `Bearer ${token}`
-          : config.headers.Authorization;
+      if (!config._retry && token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
       return config;
     });
 
-    return () => {
-      api.interceptors.request.eject(authInterceptor);
-    };
+    return () => api.interceptors.request.eject(authInterceptor);
   }, [token]);
 
   useLayoutEffect(() => {
@@ -55,31 +48,72 @@ const AuthProvider = ({ children }) => {
       (response) => response,
       async (error) => {
         const originalRequest = error.config;
-
+        // console.log(error);
         if (
           error.response.status === 401 &&
-          error.response.data.message === 'Unauthorized'
+          error.response.data.message === 'No token provided'
         ) {
           try {
-            const response = await api.get('/auth/refresh');
+            // Make the refresh token call
+            const response = await api.post('/auth/refresh'); // uncomment this
+            const newToken = response.data.token;
 
-            setToken(response.data.accessToken);
-
-            originalRequest.headers.Authorization = `Bearer ${response.data.accessToken}`;
+            setToken(newToken); // update state
+            originalRequest.headers.Authorization = `Bearer ${newToken}`;
             originalRequest._retry = true;
 
-            return api(originalRequest);
-          } catch {
+            return api(originalRequest); // retry original request with new token
+          } catch (err) {
             setToken(null);
+            setUser(null);
+            return Promise.reject(err);
           }
         }
-
         return Promise.reject(error);
       },
     );
 
-    return () => {
-      api.interceptors.response.eject(refreshInterceptor);
-    };
-  });
+    return () => api.interceptors.response.eject(refreshInterceptor);
+  }, []);
+
+  const login = async (credentials) => {
+    const response = await api.post('/auth/login', credentials);
+    setToken(response.data.token);
+    setUser(response.data.user);
+    return response.data;
+  };
+
+  const register = async (data) => {
+    const response = await api.post('/auth/register', data);
+    setToken(response.data.token);
+    setUser(response.data.user);
+    return response.data;
+  };
+
+  const logout = async () => {
+    try {
+      await api.post('/auth/logout');
+    } finally {
+      setToken(null);
+      setUser(null);
+    }
+  };
+
+  return (
+    <AuthContext.Provider
+      value={{
+        token,
+        user,
+        login,
+        register,
+        logout,
+        setToken,
+        setUser,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };
+
+export default AuthProvider;

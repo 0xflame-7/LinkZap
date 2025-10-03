@@ -19,10 +19,8 @@ async function register(req, res, next) {
     });
     res.status(201).json({
       success: true,
-      data: {
-        user: { _id: user._id, name: user.name, email: user.email },
-        accessToken,
-      },
+      user: { _id: user._id, name: user.name, email: user.email },
+      token: accessToken,
     });
   } catch (err) {
     next(err);
@@ -39,10 +37,8 @@ async function login(req, res, next) {
     });
     res.status(200).json({
       success: true,
-      data: {
-        user: { _id: user._id, name: user.name, email: user.email },
-        accessToken,
-      },
+      user: { _id: user._id, name: user.name, email: user.email },
+      token: accessToken,
     });
   } catch (err) {
     next(err);
@@ -52,7 +48,7 @@ async function login(req, res, next) {
 async function refresh(req, res, next) {
   try {
     const accessToken = await authService.refresh(req, res);
-    res.status(200).json({ success: true, data: { accessToken } });
+    res.status(200).json({ success: true, token: accessToken });
   } catch (error) {
     next(error);
   }

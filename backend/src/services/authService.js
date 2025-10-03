@@ -34,6 +34,7 @@ const {
   hashPassword: hashToken,
   comparePassword: compareToken,
 } = require('../lib/bcrypt');
+const isTokenHalfExpired = require('../utils/isTokenHalfExpired');
 
 /**
  * Create a new auth session (with token rotation + secure storage)
@@ -127,16 +128,20 @@ async function refresh(req, res) {
   const isValid = await compareToken(cookieToken, session.refreshTokenHash);
   if (!isValid) throw new UnauthorizedError('Invalid refresh token');
 
-  // Generate new access + refresh tokens (rotation)
+  // Generate new access
   const accessToken = generateAccessToken({ userId, sessionID });
-  const newRefreshToken = generateRefreshToken({ userId, sessionID });
 
-  // Save new refresh token hash
-  const newHash = await hashToken(newRefreshToken);
-  await setRefreshTokenSave(session, newHash);
+  // Rotate refresh only if close to expiry
+  if (is(cookieToken)) {
+    const newRefreshToken = generateRefreshToken({ userId, sessionID });
 
-  // Update cookie
-  setRefreshToken(res, newRefreshToken);
+    // Save new refresh token hash
+    const newHash = await hashToken(newRefreshToken);
+    await setRefreshTokenSave(session, newHash);
+
+    // Update cookie
+    setRefreshToken(res, newRefreshToken);
+  }
 
   return accessToken;
 }

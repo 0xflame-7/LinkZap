@@ -13,11 +13,11 @@ async function getMe(req, res, next) {
     const user = await userService.getUser(req);
     res.status(200).json({
       success: true,
-      data: {
-        user: { _id: user._id, name: user.name, email: user.email },
-      },
+      user: { _id: user._id, name: user.name, email: user.email },
     });
   } catch (error) {
     next(error);
   }
 }
+
+module.exports = { getMe };

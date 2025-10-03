@@ -22,7 +22,7 @@ const authenticationHandler = require('../middleware/authenticationHandler');
 const router = Router();
 
 // Rate Limit
-router.use(expressRateLimit('auth'));
+// router.use(expressRateLimit('auth')); // 10 requests per hour
 
 router.post(
   '/register',
