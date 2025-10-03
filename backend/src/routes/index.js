@@ -14,6 +14,7 @@ const { Router } = require('express');
  */
 const authRoutes = require('./authRoutes');
 const urlRoutes = require('./urlRoutes');
+const userRoutes = require('./userRoutes');
 
 // Initalize express router
 const router = Router();
@@ -29,5 +30,6 @@ router.get('/health', (req, res) => {
 
 router.use('/auth', authRoutes);
 router.use('/url', urlRoutes);
+router.use('/user', userRoutes);
 
 module.exports = router;

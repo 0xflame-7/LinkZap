@@ -22,4 +22,13 @@ const findUserByEmailPublic = async (email) => {
   return await User.findOne({ email });
 };
 
-module.exports = { createUser, getUserByEmail, findUserByEmailPublic };
+const getUserWithoutPassword = async (userId) => {
+  return await User.findById(userId);
+};
+
+module.exports = {
+  createUser,
+  getUserByEmail,
+  findUserByEmailPublic,
+  getUserWithoutPassword,
+};
