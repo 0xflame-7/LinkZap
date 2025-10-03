@@ -1,5 +1,8 @@
 import UrlShortenerForm from '@/components/urlShortenerForm';
 import React from 'react';
+import AuthPage from './AuthPage';
+import { Link } from 'wouter';
+import { Button } from '@/components/ui/button';
 
 export default function Home() {
   return (
@@ -12,6 +15,13 @@ export default function Home() {
           Paste your long URL and get a shortened one. It's free and easy to
           use.
         </p>
+
+        <Link href="/auth/login">
+          <Button>Logic</Button>
+        </Link>
+        <Link href="/auth/register">
+          <Button>Register</Button>
+        </Link>
         <UrlShortenerForm />
       </div>
     </div>

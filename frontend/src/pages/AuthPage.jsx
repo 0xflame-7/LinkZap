@@ -1,8 +1,12 @@
-import { Button } from '@/components/ui/button';
-import { useAuth } from '@/hooks/use-auth';
+import LogicForm from '@/components/auth/LogicForm';
+import RegisterForm from '@/components/auth/RegisterForm';
 
-export default function AuthPage() {
-  const { login, register, logout, user } = useAuth();
+export default function AuthPage({ type }) {
+  const isLogin = type === 'login';
 
-  return <h1>Hello</h1>;
+  return (
+    <div className="flex h-screen w-screen items-center justify-center">
+      {isLogin ? <LogicForm /> : <RegisterForm />}
+    </div>
+  );
 }

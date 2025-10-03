@@ -3,10 +3,11 @@ import api from '@/lib/api';
 import { AuthContext } from '@/context/authContext';
 
 const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(() => {
-    return sessionStorage.getItem('token') || null;
-  });
+  const [token, setToken] = useState(
+    () => sessionStorage.getItem('token') || null,
+  );
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (token) {
@@ -19,13 +20,20 @@ const AuthProvider = ({ children }) => {
   // Fetch logged-in user when app starts
   useEffect(() => {
     const fetchMe = async () => {
-      if (!token) return;
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+      setLoading(true);
       try {
         const response = await api.get('/user/me');
         setUser(response.data.user);
+        setLoading(false);
       } catch {
         setToken(null);
         setUser(null);
+      } finally {
+        setLoading(false);
       }
     };
     fetchMe();
@@ -77,38 +85,53 @@ const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (credentials) => {
-    const response = await api.post('/auth/login', credentials);
-    setToken(response.data.token);
-    setUser(response.data.user);
-    return response.data;
+    setLoading(true);
+    try {
+      const response = await api.post('/auth/login', credentials);
+      setToken(response.data.token);
+      setUser(response.data.user);
+      return response.data;
+    } catch (error) {
+      console.log('Login', error);
+      return error;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const register = async (data) => {
-    const response = await api.post('/auth/register', data);
-    setToken(response.data.token);
-    setUser(response.data.user);
-    return response.data;
-  };
-
-  const logout = async () => {
+    setLoading(true);
     try {
-      await api.post('/auth/logout');
+      const response = await api.post('/auth/register', data);
+      setToken(response.data.token);
+      setUser(response.data.user);
+      return response.data;
+    } catch (error) {
+      return error;
     } finally {
-      setToken(null);
-      setUser(null);
+      setLoading(false);
     }
   };
+
+  // const logout = async () => {
+  //   setLoading(true);
+  //   try {
+  //     await api.post('/auth/logout');
+  //   } finally {
+  //     setToken(null);
+  //     setUser(null);
+  //     setLoading(false);
+  //   }
+  // };
 
   return (
     <AuthContext.Provider
       value={{
         token,
         user,
-        login,
+        loading,
         register,
-        logout,
-        setToken,
-        setUser,
+        login,
       }}
     >
       {children}
