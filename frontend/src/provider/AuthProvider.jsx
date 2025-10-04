@@ -6,32 +6,49 @@ const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(
     () => sessionStorage.getItem('token') || null,
   );
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(() => {
+    const storedUser = sessionStorage.getItem('user');
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
+  const [loading, setLoading] = useState(true);
 
+  // Keep token in storage in sync
   useEffect(() => {
     if (token) {
       sessionStorage.setItem('token', token);
     } else {
       sessionStorage.removeItem('token');
+      setUser(null);
+      sessionStorage.removeItem('user');
     }
   }, [token]);
+
+  // Keep user in storage in sync
+  useEffect(() => {
+    if (user) {
+      sessionStorage.setItem('user', JSON.stringify(user));
+    } else {
+      sessionStorage.removeItem('user');
+    }
+  }, [user]);
 
   // Fetch logged-in user when app starts
   useEffect(() => {
     const fetchMe = async () => {
-      if (!token) {
-        setLoading(false);
-        return;
-      }
+      // if (!token) {
+      //   setUser(null);
+      //   setLoading(false);
+      //   return;
+      // }
       setLoading(true);
       try {
         const response = await api.get('/user/me');
         setUser(response.data.user);
-        setLoading(false);
       } catch {
         setToken(null);
         setUser(null);
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('user');
       } finally {
         setLoading(false);
       }
@@ -74,6 +91,8 @@ const AuthProvider = ({ children }) => {
           } catch (err) {
             setToken(null);
             setUser(null);
+            sessionStorage.removeItem('token');
+            sessionStorage.removeItem('user');
             return Promise.reject(err);
           }
         }
@@ -113,16 +132,18 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  // const logout = async () => {
-  //   setLoading(true);
-  //   try {
-  //     await api.post('/auth/logout');
-  //   } finally {
-  //     setToken(null);
-  //     setUser(null);
-  //     setLoading(false);
-  //   }
-  // };
+  const logout = async () => {
+    setLoading(true);
+    try {
+      await api.post('/auth/logout');
+    } finally {
+      setToken(null);
+      setUser(null);
+      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('user');
+      setLoading(false);
+    }
+  };
 
   return (
     <AuthContext.Provider
@@ -132,6 +153,7 @@ const AuthProvider = ({ children }) => {
         loading,
         register,
         login,
+        logout,
       }}
     >
       {children}
