@@ -28,7 +28,6 @@ const sessionSchema = new Schema(
       type: String,
       required: true,
     },
-    // TODO: Hash the refresh token and Rotate the refresh token
     refreshTokenHash: {
       type: String,
     },
