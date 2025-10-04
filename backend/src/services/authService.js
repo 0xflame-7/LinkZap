@@ -23,6 +23,7 @@ const {
   getRefreshTokenPayload,
   clearRefreshToken,
   setRefreshToken,
+  getRefreshToken,
 } = require('../lib/cookieParser');
 const {
   createSession,
@@ -35,7 +36,6 @@ const {
   comparePassword: compareToken,
 } = require('../lib/bcrypt');
 const isTokenHalfExpired = require('../utils/isTokenHalfExpired');
-
 /**
  * Create a new auth session (with token rotation + secure storage)
  */
@@ -120,19 +120,16 @@ async function refresh(req, res) {
   // Validate session
   const session = await getSession(sessionID);
   if (!session) throw new UnauthorizedError('Invalid session');
-
   // Compare cookie token with DB hash
-  const cookieToken = req.cookies?.refreshToken;
+  const cookieToken = getRefreshToken(req);
   if (!cookieToken) throw new UnauthorizedError('Missing refresh token');
 
   const isValid = await compareToken(cookieToken, session.refreshTokenHash);
   if (!isValid) throw new UnauthorizedError('Invalid refresh token');
-
   // Generate new access
   const accessToken = generateAccessToken({ userId, sessionID });
-
   // Rotate refresh only if close to expiry
-  if (is(cookieToken)) {
+  if (isTokenHalfExpired(cookieToken)) {
     const newRefreshToken = generateRefreshToken({ userId, sessionID });
 
     // Save new refresh token hash

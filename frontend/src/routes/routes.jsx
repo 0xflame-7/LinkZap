@@ -7,10 +7,10 @@ import { Redirect } from 'wouter';
 import { Switch, Route } from 'wouter';
 
 export default function Router() {
-  const { user, token } = useAuth();
+  const { user } = useAuth();
 
-  console.log(user);
-  console.log(token);
+  // console.log(user);
+  // console.log(token);
 
   return (
     <Switch>

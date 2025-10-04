@@ -1,12 +1,20 @@
 import React from 'react';
-import { Form, FormControl, FormField, FormItem, FormMessage } from './ui/form';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from '@/components/ui/form';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Input } from './ui/input';
-import { Button } from './ui/button';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import api from '@/lib/api';
+import { Card, CardContent } from '@/components/ui/card';
+import { Copy } from 'lucide-react';
 
 const formSchema = z.object({
   url: z.string().url('Enter a valid URL'),
@@ -35,8 +43,8 @@ export default function UrlShortenerForm() {
       const formData = new FormData();
       formData.append('url', data.url);
       const response = await api.post('/url/shorten', formData);
-      if (response.success && response.data) {
-        const result = await response.json();
+      if (response.data.success && response.data) {
+        const result = response.data.url;
         setShortUrl(result.shortUrl);
         setShortCode(result.shortCode);
         console.log(shortCode);

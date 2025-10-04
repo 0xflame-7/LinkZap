@@ -35,13 +35,14 @@ const AuthProvider = ({ children }) => {
   // Fetch logged-in user when app starts
   useEffect(() => {
     const fetchMe = async () => {
-      // if (!token) {
-      //   setUser(null);
-      //   setLoading(false);
-      //   return;
-      // }
+      if (!token) {
+        setUser(null);
+        setLoading(false);
+        return;
+      }
       setLoading(true);
       try {
+        console.log('Top');
         const response = await api.get('/user/me');
         setUser(response.data.user);
       } catch {
@@ -73,7 +74,6 @@ const AuthProvider = ({ children }) => {
       (response) => response,
       async (error) => {
         const originalRequest = error.config;
-        // console.log(error);
         if (
           error.response.status === 401 &&
           error.response.data.message === 'No token provided'
@@ -111,7 +111,6 @@ const AuthProvider = ({ children }) => {
       setUser(response.data.user);
       return response.data;
     } catch (error) {
-      console.log('Login', error);
       return error;
     } finally {
       setLoading(false);

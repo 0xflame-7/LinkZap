@@ -9,8 +9,8 @@
  */
 const { nanoid } = require('nanoid');
 
-function generateUniqueId(length = 10) {
+function generateId(length = 10) {
   return nanoid(length);
 }
 
-module.exports = generateUniqueId;
+module.exports = generateId;

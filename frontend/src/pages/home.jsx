@@ -1,8 +1,8 @@
-import UrlShortenerForm from '@/components/urlShortenerForm';
 import React from 'react';
 import AuthPage from './AuthPage';
 import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
+import UrlShortenerForm from '@/components/url/urlShortenerForm';
 
 export default function Home() {
   return (

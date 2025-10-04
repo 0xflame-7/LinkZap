@@ -4,27 +4,37 @@
  * @license Apache-2.0
  */
 
-/**
- * Custom modules
- */
 const { logger } = require('../lib/winston');
 
 const requestHandler = (req, res, next) => {
   const start = Date.now();
-  // When response finishes, log details
+
+  // Capture response body by overriding res.send
+  const oldSend = res.send;
+  let responseBody;
+  res.send = function (body) {
+    responseBody = body;
+    return oldSend.apply(res, arguments);
+  };
+
   res.on('finish', () => {
     const duration = Date.now() - start;
+
     logger.info(
       `${req.method} ${req.originalUrl} ${res.statusCode} - ${duration}ms`,
     );
+
     logger.info({
       method: req.method,
       url: req.originalUrl,
       ip: req.ip,
       userAgent: req.headers['user-agent'],
+      headers: req.headers,
 
       request: {
-        cookies: req.cookies, // needs cookie-parser middleware
+        cookies: {
+          refreshToken: req.cookies.refreshToken || null,
+        },
         query: req.query,
         body: req.body,
       },
@@ -32,15 +42,19 @@ const requestHandler = (req, res, next) => {
       response: {
         statusCode: res.statusCode,
         statusMessage: res.statusMessage,
-        body: responseBody, // careful: can be huge/sensitive
+        body:
+          typeof responseBody === 'string'
+            ? responseBody
+            : JSON.stringify(responseBody), // safe stringify
       },
 
       meta: {
         duration: `${duration}ms`,
-        route: req.route ? req.route.path : 'N/A', // route path if matched
+        route: req.route ? req.route.path : 'N/A',
       },
     });
   });
+
   next();
 };
 

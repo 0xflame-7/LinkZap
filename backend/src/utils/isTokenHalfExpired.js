@@ -4,7 +4,7 @@
  */
 const { decodeToken } = require('../lib/jwt');
 
-module.exports.isTokenHalfExpired = (token) => {
+module.exports = async function isTokenHalfExpired(token) {
   if (!token) return true; // no token = expired
 
   try {
