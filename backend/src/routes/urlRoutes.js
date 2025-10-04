@@ -23,10 +23,6 @@ const router = Router();
 // Rate Limit
 router.use(expressRateLimit('basic'));
 
-router.post(
-  '/generate',
-  validationHandler(urlSchema),
-  urlController.shortenUrl,
-);
+router.post('/shorten', validationHandler(urlSchema), urlController.shortenUrl);
 
 module.exports = router;
